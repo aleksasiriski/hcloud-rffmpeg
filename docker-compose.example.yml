@@ -1,0 +1,50 @@
+version: "3.9"
+services:
+  jellyfin:
+    image: ghcr.io/aleksasiriski/jellyfin-rffmpeg-server:latest
+    environment:
+      - TZ=Europe/Berlin
+#      - JELLYFIN_PublishedServerUrl=https://jellyfin.example.com
+    ports:
+      - ${SERVER_LAN_IP-}:8096:8096
+    volumes:
+      - jellyfin-conf:/config:z
+      - jellyfin-cache:/cache:z
+      - rffmpeg-conf:/config/rffmpeg:z
+      - /var/storage/media:/var/storage/media:ro
+    restart: always
+  nfs-server:
+    image: docker.io/itsthenetwork/nfs-server-alpine:latest
+    cap_add:
+      - SYS_ADMIN
+      - SYS_MODULE
+    environment:
+      - TZ=Europe/Berlin
+      - SYNC=true
+      - PERMITTED=*
+      - SHARED_DIRECTORY=/var/jellyfin
+      - SHARED_DIRECTORY_2=/var/jellyfin/cache
+    ports:
+      - ${RFFMPEG_LAN_IP-}:2049:2049
+    volumes:
+      - jellyfin-conf:/var/jellyfin:z
+      - jellyfin-cache:/var/jellyfin/cache:z
+      - /lib/modules:/lib/modules:ro
+    restart: always
+  hcloud-rffmpeg:
+    image: ghcr.io/aleksasiriski/hcloud-rffmpeg:latest
+    depends_on:
+      - jellyfin
+    environment:
+      - TZ=Europe/Berlin
+      - RFFMPEG_LAN_IP=$RFFMPEG_LAN_IP
+      - HCLOUD_API_TOKEN=$HCLOUD_API_TOKEN
+      - CIFS_MEDIA_USERNAME=$CIFS_MEDIA_USERNAME_NODE
+      - CIFS_MEDIA_PASSWORD=$CIFS_MEDIA_PASSWORD_NODE
+    volumes:
+      - rffmpeg-conf:/config/rffmpeg:z
+    restart: always
+volumes:
+  jellyfin-conf:
+  jellyfin-cache:
+  rffmpeg-conf:
