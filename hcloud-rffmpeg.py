@@ -112,13 +112,16 @@ def setup():
     except:
         log.debug("No key found to remove.")
 
+    public_key = ""
     with open(config["id_rsa_pub"], 'r') as id_rsa_pub_file:
-        for line in id_rsa_pub_file.readlines():
-            public_key = line.split()
+        public_key = id_rsa_pub_file.readline().split()
         id_rsa_pub_file.close()
 
+    log.debug("Using public key: " + public_key)
+    print("Using public key: " + public_key)
+
     config["client"].ssh_keys.create(
-        SSH_KEY_NAME,
+        name=SSH_KEY_NAME,
         public_key=public_key
     )
 
@@ -236,7 +239,7 @@ async def create_server(config):
 
         server_name = await next_node_name(config)
         response = config["client"].servers.create(
-            server_name,
+            name=server_name,
             server_type=config["server_type"],
             image=config["image"],
             ssh_keys=config["ssh_keys"],
@@ -445,6 +448,7 @@ async def check_processes_and_rescale(config):
 
 async def main():
     print("Starting HCloud!")
+    await asyncio.sleep(30)
 
     # Setup
     config = setup()
