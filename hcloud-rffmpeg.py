@@ -300,13 +300,11 @@ async def remove_server(config, server_name):
 
     await remove_keyscan(config, server_name)
 
-    response = config["client"].servers.delete(server)
-    status = response.action.status
-
-    if status == "error":
-        log.error("Error occured while deleting the server from HCloud!")
-    else:
-        log.debug("Successfully removed node from rffmpeg and from HCloud.")
+    try:
+        config["client"].servers.delete(server)
+        log.debug("Found server and removed it.")
+    except:
+        log.debug("No server found to remove.")
 
 async def check_unused_node(config, server_name):
     log.debug("Started checking if %s is unused, firstly sleeping for 50 minutes"%(server_name))
