@@ -169,16 +169,7 @@ def dbconn(config):
     conn.close()
 
 def run_command(command):
-    p = run(
-        command,
-        shell=False,
-        bufsize=0,
-        universal_newlines=True,
-        stdin=sys.stdin,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
-    )
-    return p
+    return run(command, shell = True)
 
 
 async def recently_made_node_timer(config, delay):
