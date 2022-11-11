@@ -114,7 +114,11 @@ def setup():
 
     public_key = ""
     with open(config["id_rsa_pub"], 'r') as id_rsa_pub_file:
-        public_key = id_rsa_pub_file.readline().split()
+        public_key = id_rsa_pub_file.readline()
+        print(public_key)
+        print("\nsplit\n")
+        public_key = public_key.split()
+        print(public_key)
         id_rsa_pub_file.close()
 
     log.debug("Using public key: " + public_key)
