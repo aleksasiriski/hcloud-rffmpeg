@@ -1,10 +1,15 @@
 import os
+import sys
 import logging
 import asyncio
+
+import re
+from typing import Pattern
 
 from contextlib import contextmanager
 from pathlib import Path
 from sqlite3 import connect as sqlite_connect
+from subprocess import run
 
 from hcloud import Client
 from hcloud.server_types.domain import ServerType
@@ -50,6 +55,11 @@ def setup():
     if DB_PATH == None:
         DB_PATH = STATE_DIR + "/rffmpeg.db"
     config["db_path"] = DB_PATH
+
+    KNOWN_HOSTS = os.getenv("KNOWN_HOSTS")
+    if KNOWN_HOSTS == None:
+        KNOWN_HOSTS = STATE_DIR + "/.ssh/known_hosts"
+    config["known_hosts"] = KNOWN_HOSTS
 
 
     RFFMPEG_LAN_IP = os.getenv("RFFMPEG_LAN_IP")
@@ -133,6 +143,18 @@ def dbconn(config):
     conn.commit()
     conn.close()
 
+def run_command(command):
+    p = run(
+        command,
+        shell=False,
+        bufsize=0,
+        universal_newlines=True,
+        stdin=sys.stdin,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+    )
+    return p
+
 
 async def recently_made_node_timer(config, delay):
     await asyncio.sleep(delay)
@@ -171,6 +193,16 @@ async def next_node_name(config):
 
     return new_name
 
+async def keyscan_node(config, server_name, server_ip):
+    log.debug("Keyscanning node %s with IP %s"%(server_name, server_ip))
+
+    header = "echo '#begin %s' | tee -a "%(server_name) + config["known_hosts"]
+    footer = "echo '#end %s' | tee -a "%(server_name) + config["known_hosts"]
+
+    ssh_keyscan = "ssh-keyscan " + server_ip + " | tee -a " + config["known_hosts"]
+
+    return run_command(header + " && " + ssh_keyscan + " && " + footer)
+
 async def create_server(config):
     log.info("Creating a server!")
 
@@ -193,10 +225,12 @@ async def create_server(config):
         if response.action.status == "error":
             log.error("Error occured while creating the server in HCloud!")
         else:
+            await asyncio.sleep(60)
             log.debug("Successfully created a server in HCloud!")
-            await asyncio.sleep(30)
 
             server_ip = config["client"].servers.get_by_name(name=server_name).private_net[0].ip
+            await keyscan_node(config, server_name, server_ip)
+
             weight = 1
             with dbconn(config) as cur:
                 cur.execute("INSERT INTO hosts (hostname, weight, server_name) VALUES (?, ?, ?)", (server_ip, weight, server_name))
@@ -206,12 +240,52 @@ async def create_server(config):
 
     else:
         log.debug("Recently made a server!")
-    
+
+async def remove_keyscan(config, server_name):
+    log.debug("Removing keyscanned node")
+
+    if os.path.exists(config["known_hosts"]):
+        log.debug("Found known hosts file.")
+
+        header = "#begin %s"%(server_name)
+        footer = "#end %s"%(server_name)
+        known_hosts = ""
+
+        with open(config["known_hosts"], 'r') as known_hosts_file:
+            lines = known_hosts_file.readlines()
+
+            found_header = False
+            found_footer = False
+
+            for line in lines:
+                if not found_header and line == header:
+                    found_header = True
+                elif not found_footer and line == footer:
+                    found_footer = True
+
+                if not found_header or found_footer:
+                    known_hosts += line
+
+            known_hosts_file.close()
+
+        log.debug("Finished reading known hosts file.")
+
+        with open(config["known_hosts"], 'w') as known_hosts_file:
+            known_hosts_file.write(known_hosts)
+            known_hosts_file.close()
+
+        log.debug("Finished writing known hosts file.")
+
+    else:
+        log.error("No known hosts file found, can't remove keyscanned node!")
+
 async def remove_server(config, server_name):
     server = config["client"].servers.get_by_name(name=server_name)
 
     with dbconn(config) as cur:
         cur.execute("DELETE FROM hosts WHERE server_name = ?", (server_name,))
+
+    await remove_keyscan(config, server_name)
 
     response = config["client"].servers.delete(server)
     status = response.action.status
@@ -255,35 +329,45 @@ async def check_unused_node(config, server_name):
             else:
                 log.debug("Node %s marked as active, sleeping."%(server_name))
                 await asyncio.sleep(delay_ending_hour)
+
         if not removed:
             await asyncio.sleep(delay_hour)
 
 
+async def remove_known_hosts(config):
+    log.info("Removing known hosts file.")
+
+    if os.path.exists(config["known_hosts"]):
+        log.debug("Found known hosts file. Removing it.")
+        os.remove(config["known_hosts"])
+    else:
+        log.debug("No known hosts file found.")
+
 async def remove_all_processes(config):
-    log.debug("Checking if there are any processes.")
+    log.info("Removing all processes from database.")
     
     with dbconn(config) as cur:
         processes = cur.execute("SELECT * FROM processes").fetchall()
 
     if len(processes) < 1:
-        log.info("No processes found.")
+        log.debug("No processes found.")
     else:
-        log.info("Removing all processes.")
+        log.debug("Removing all processes.")
         for process in processes:
             pid, host_id, process_id, cmd = process
             with dbconn(config) as cur:
                 cur.execute("DELETE FROM processes WHERE id = ?", (pid,))
 
 async def remove_all_nodes(config):
-    log.debug("Checking if there are any nodes.")
+    log.info("Removing all nodes from database and HCloud.")
         
     with dbconn(config) as cur:
         hosts = cur.execute("SELECT * FROM hosts").fetchall()
 
     if len(hosts) < 1:
-        log.info("No nodes found.")
+        log.debug("No nodes found.")
     else:
-        log.info("Removing all nodes.")
+        log.debug("Removing all nodes.")
         for host in hosts:
             hid, hostname, weight, server_name = host
             log.debug("Removing node %s."%(server_name))
@@ -342,9 +426,10 @@ async def main():
     setup_logger(config)
 
     if not Path(config["db_path"]).is_file():
-        fail("Failed to find database %s - did you forget to run 'rffmpeg init'?"%(DB_PATH))
+        fail("Failed to find database %s - did you forget to run 'rffmpeg init'?"%(config["db_path"]))
 
     # Removing old processes and nodes
+    await remove_known_hosts(config)
     await remove_all_processes(config)
     await remove_all_nodes(config)
 
