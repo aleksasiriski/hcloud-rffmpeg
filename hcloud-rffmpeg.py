@@ -106,7 +106,11 @@ def setup():
         SSH_KEY_NAME = "root@jellyfin"
 
     ssh_key = config["client"].ssh_keys.get_by_name(name=SSH_KEY_NAME)
-    config["client"].ssh_keys.delete(ssh_key)
+    try:
+        log.debug("Found key to remove.")
+        config["client"].ssh_keys.delete(ssh_key)
+    except:
+        log.debug("No key found to remove.")
 
     with open(config["id_rsa_pub"], 'r') as id_rsa_pub_file:
         public_key = id_rsa_pub_file.readlines()
