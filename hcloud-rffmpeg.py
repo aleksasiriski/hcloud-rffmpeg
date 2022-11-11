@@ -61,6 +61,11 @@ def setup():
         KNOWN_HOSTS = STATE_DIR + "/.ssh/known_hosts"
     config["known_hosts"] = KNOWN_HOSTS
 
+    ID_RSA_PUB = os.getenv("ID_RSA_PUB")
+    if ID_RSA_PUB == None:
+        ID_RSA_PUB = STATE_DIR + "/.ssh/id_rsa.pub"
+    config["id_rsa_pub"] = ID_RSA_PUB
+
 
     RFFMPEG_LAN_IP = os.getenv("RFFMPEG_LAN_IP")
     if RFFMPEG_LAN_IP == None:
@@ -95,10 +100,25 @@ def setup():
         IMAGE = "docker-ce"
     config["image"] = Image(name=IMAGE)
 
-    SSH_KEYS = os.getenv("SSH_KEYS")
-    if SSH_KEYS == None:
-        SSH_KEYS = "root@jellyfin"
-    config["ssh_keys"] = config["client"].ssh_keys.get_all(name=SSH_KEYS)
+
+    SSH_KEY_NAME = os.getenv("SSH_KEY_NAME")
+    if SSH_KEY_NAME == None:
+        SSH_KEY_NAME = "root@jellyfin"
+
+    ssh_key = config["client"].ssh_keys.get_by_name(name=SSH_KEY_NAME)
+    config["client"].ssh_keys.delete(ssh_key)
+
+    with open(config["id_rsa_pub"], 'r') as id_rsa_pub_file:
+        public_key = id_rsa_pub_file.readlines()
+        id_rsa_pub_file.close()
+
+    config["client"].ssh_keys.create(
+        SSH_KEY_NAME,
+        public_key=public_key
+    )
+
+    config["ssh_keys"] = config["client"].ssh_keys.get_all(name=SSH_KEY_NAME)
+
 
     NETWORKS = os.getenv("NETWORKS")
     if NETWORKS == None:
