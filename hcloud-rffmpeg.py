@@ -257,9 +257,11 @@ async def create_server(config):
             server_ip = config["client"].servers.get_by_name(name=server_name).private_net[0].ip
             await keyscan_node(config, server_name, server_ip)
 
-            weight = 1
             with dbconn(config) as cur:
-                cur.execute("INSERT INTO hosts (hostname, weight, server_name) VALUES (?, ?, ?)", (server_ip, weight, server_name))
+                cur.execute(
+                    "INSERT INTO hosts (hostname, weight, server_name) VALUES (?, ?, ?)",
+                    (server_ip, 1, server_name),
+                )
 
             log.info("Added %s with IP %s to database!"%(server_name,server_ip))
             asyncio.create_task(check_unused_node(config, server_name))
