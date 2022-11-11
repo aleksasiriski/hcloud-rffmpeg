@@ -345,10 +345,8 @@ async def check_unused_node(config, server_name):
 
             if not current_state:
                 current_state = "idle"
-                marking_pid = 'N/A'
             else:
                 current_state = current_state[3]
-                marking_pid = current_state[2]
 
             if current_state != "active":
                 log.info("Node %s marked as inactive and is being removed."%(server_name))
