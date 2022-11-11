@@ -107,22 +107,19 @@ def setup():
 
     ssh_key = config["client"].ssh_keys.get_by_name(name=SSH_KEY_NAME)
     try:
-        log.debug("Found key to remove.")
         config["client"].ssh_keys.delete(ssh_key)
+        log.debug("Found key and removed it.")
     except:
         log.debug("No key found to remove.")
 
     public_key = ""
     with open(config["id_rsa_pub"], 'r') as id_rsa_pub_file:
-        public_key = id_rsa_pub_file.readline()
-        print(public_key)
-        print("\nsplit\n")
-        public_key = public_key.split()
-        print(public_key)
+        public_key = id_rsa_pub_file.readline().split()
         id_rsa_pub_file.close()
 
-    log.debug("Using public key: " + public_key)
-    print("Using public key: " + public_key)
+    #log.debug("Using public key: " + public_key)
+    print("Using public key:")
+    print(public_key)
 
     config["client"].ssh_keys.create(
         name=SSH_KEY_NAME,
