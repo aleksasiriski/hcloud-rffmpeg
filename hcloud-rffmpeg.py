@@ -113,7 +113,8 @@ def setup():
         log.debug("No key found to remove.")
 
     with open(config["id_rsa_pub"], 'r') as id_rsa_pub_file:
-        public_key = id_rsa_pub_file.readlines()
+        for line in id_rsa_pub_file.readlines():
+            public_key = line.split()
         id_rsa_pub_file.close()
 
     config["client"].ssh_keys.create(
