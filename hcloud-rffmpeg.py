@@ -117,10 +117,6 @@ def setup():
         public_key = id_rsa_pub_file.readline()
         id_rsa_pub_file.close()
 
-    #log.debug("Using public key: " + public_key)
-    print("Using public key:")
-    print(public_key)
-
     config["client"].ssh_keys.create(
         name=SSH_KEY_NAME,
         public_key=public_key
