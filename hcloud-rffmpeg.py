@@ -97,7 +97,7 @@ def setup():
 
     IMAGE = os.getenv("IMAGE")
     if IMAGE == None:
-        IMAGE = "docker-ce"
+        IMAGE = "rocky-9"
     config["image"] = Image(name=IMAGE)
 
 
