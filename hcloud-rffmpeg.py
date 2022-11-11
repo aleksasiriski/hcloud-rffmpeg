@@ -251,7 +251,7 @@ async def create_server(config):
         if response.action.status == "error":
             log.error("Error occured while creating the server in HCloud!")
         else:
-            await asyncio.sleep(60)
+            await asyncio.sleep(120)
             log.debug("Successfully created a server in HCloud!")
 
             server_ip = config["client"].servers.get_by_name(name=server_name).private_net[0].ip
