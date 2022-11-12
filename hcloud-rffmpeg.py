@@ -219,16 +219,6 @@ async def next_node_name(config):
 
     return new_name
 
-async def keyscan_node(config, server_name, server_ip):
-    log.debug("Keyscanning node %s with IP %s"%(server_name, server_ip))
-
-    header = "echo '#begin %s' | tee -a "%(server_name) + config["known_hosts"]
-    footer = "echo '#end %s' | tee -a "%(server_name) + config["known_hosts"]
-
-    ssh_keyscan = "ssh-keyscan " + server_ip + " | tee -a " + config["known_hosts"]
-
-    return run_command(header + " && " + ssh_keyscan + " && " + footer)
-
 async def create_server(config):
     log.info("Creating a server!")
 
@@ -255,7 +245,6 @@ async def create_server(config):
             log.debug("Successfully created a server in HCloud!")
 
             server_ip = config["client"].servers.get_by_name(name=server_name).private_net[0].ip
-            await keyscan_node(config, server_name, server_ip)
 
             with dbconn(config) as cur:
                 cur.execute(
@@ -269,51 +258,11 @@ async def create_server(config):
     else:
         log.debug("Recently made a server!")
 
-async def remove_keyscan(config, server_name):
-    log.debug("Removing keyscanned node")
-
-    if os.path.exists(config["known_hosts"]):
-        log.debug("Found known hosts file.")
-
-        header = "#begin %s"%(server_name)
-        footer = "#end %s"%(server_name)
-        known_hosts = ""
-
-        with open(config["known_hosts"], 'r') as known_hosts_file:
-            lines = known_hosts_file.readlines()
-
-            found_header = False
-            found_footer = False
-
-            for line in lines:
-                if not found_header and line == header + "\n":
-                    found_header = True
-                elif not found_footer and line == footer + "\n":
-                    found_footer = True
-
-                if not found_header or found_footer:
-                    known_hosts += line
-
-            known_hosts_file.close()
-
-        log.debug("Finished reading known hosts file.")
-
-        with open(config["known_hosts"], 'w') as known_hosts_file:
-            known_hosts_file.write(known_hosts)
-            known_hosts_file.close()
-
-        log.debug("Finished writing known hosts file.")
-
-    else:
-        log.error("No known hosts file found, can't remove keyscanned node!")
-
 async def remove_server(config, server_name):
     server = config["client"].servers.get_by_name(name=server_name)
 
     with dbconn(config) as cur:
         cur.execute("DELETE FROM hosts WHERE server_name = ?", (server_name,))
-
-    await remove_keyscan(config, server_name)
 
     try:
         config["client"].servers.delete(server)
