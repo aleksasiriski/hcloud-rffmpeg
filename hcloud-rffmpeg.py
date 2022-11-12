@@ -300,15 +300,6 @@ async def check_unused_node(config, server_name):
             await asyncio.sleep(delay_hour)
 
 
-async def remove_known_hosts(config):
-    log.info("Removing known hosts file.")
-
-    if os.path.exists(config["known_hosts"]):
-        log.debug("Found known hosts file. Removing it.")
-        os.remove(config["known_hosts"])
-    else:
-        log.debug("No known hosts file found.")
-
 async def remove_all_processes(config):
     log.info("Removing all processes from database.")
     
@@ -396,7 +387,6 @@ async def main():
         fail("Failed to find database %s - did you forget to run 'rffmpeg init'?"%(config["db_path"]))
 
     # Removing old processes and nodes
-    await remove_known_hosts(config)
     await remove_all_processes(config)
     await remove_all_nodes(config)
 
