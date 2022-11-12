@@ -286,9 +286,9 @@ async def remove_keyscan(config, server_name):
             found_footer = False
 
             for line in lines:
-                if not found_header and line == header:
+                if not found_header and line == header + "\n":
                     found_header = True
-                elif not found_footer and line == footer:
+                elif not found_footer and line == footer + "\n":
                     found_footer = True
 
                 if not found_header or found_footer:
