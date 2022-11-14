@@ -25,7 +25,7 @@ services:
       - SHARED_DIRECTORY=/var/jellyfin
       - SHARED_DIRECTORY_2=/var/jellyfin/cache
     ports:
-      - ${RFFMPEG_LAN_IP-}:2049:2049
+      - ${NFS_LAN_IP-}:2049:2049
     volumes:
       - jellyfin-conf:/var/jellyfin:z
       - jellyfin-cache:/var/jellyfin/cache:z
@@ -39,8 +39,8 @@ services:
       - TZ=Europe/Berlin
       - RFFMPEG_LAN_IP=$RFFMPEG_LAN_IP
       - HCLOUD_API_TOKEN=$HCLOUD_API_TOKEN
-      - CIFS_MEDIA_USERNAME=$CIFS_MEDIA_USERNAME_NODE
-      - CIFS_MEDIA_PASSWORD=$CIFS_MEDIA_PASSWORD_NODE
+      - MEDIA_USERNAME=$MEDIA_USERNAME_NODE
+      - MEDIA_PASSWORD=$MEDIA_PASSWORD_NODE
     volumes:
       - rffmpeg-conf:/config/rffmpeg:z
     restart: always

@@ -52,36 +52,27 @@ def setup():
         DB_PATH = STATE_DIR + "/rffmpeg.db"
     config["db_path"] = DB_PATH
 
-    KNOWN_HOSTS = os.getenv("KNOWN_HOSTS")
-    if KNOWN_HOSTS == None:
-        KNOWN_HOSTS = STATE_DIR + "/.ssh/known_hosts"
-    config["known_hosts"] = KNOWN_HOSTS
-
     ID_RSA_PUB = os.getenv("ID_RSA_PUB")
     if ID_RSA_PUB == None:
         ID_RSA_PUB = STATE_DIR + "/.ssh/id_rsa.pub"
     config["id_rsa_pub"] = ID_RSA_PUB
 
 
-    RFFMPEG_LAN_IP = os.getenv("RFFMPEG_LAN_IP")
-    if RFFMPEG_LAN_IP == None:
-        fail("RFFMPEG_LAN_IP env isn't set")
-    config["rffmpeg_lan_ip"] = RFFMPEG_LAN_IP
+    NFS_LAN_IP = os.getenv("NFS_LAN_IP")
+    if NFS_LAN_IP == None:
+        fail("NFS_LAN_IP env isn't set")
 
     HCLOUD_API_TOKEN = os.getenv("HCLOUD_API_TOKEN")
     if HCLOUD_API_TOKEN == None:
         fail("HCLOUD_API_TOKEN env isn't set")
-    config["hcloud_api_token"] = HCLOUD_API_TOKEN
 
-    CIFS_MEDIA_USERNAME = os.getenv("CIFS_MEDIA_USERNAME")
-    if CIFS_MEDIA_USERNAME == None:
-        fail("CIFS_MEDIA_USERNAME env isn't set")
-    config["cifs_media_username"] = CIFS_MEDIA_USERNAME
+    MEDIA_USERNAME = os.getenv("MEDIA_USERNAME")
+    if MEDIA_USERNAME == None:
+        fail("MEDIA_USERNAME env isn't set")
 
-    CIFS_MEDIA_PASSWORD = os.getenv("CIFS_MEDIA_PASSWORD")
-    if CIFS_MEDIA_PASSWORD == None:
-        fail("CIFS_MEDIA_PASSWORD env isn't set")
-    config["cifs_media_password"] = CIFS_MEDIA_PASSWORD
+    MEDIA_PASSWORD = os.getenv("MEDIA_PASSWORD")
+    if MEDIA_PASSWORD == None:
+        fail("MEDIA_PASSWORD env isn't set")
 
 
     config["client"] = Client(token=HCLOUD_API_TOKEN)
@@ -91,10 +82,10 @@ def setup():
         SERVER_TYPE = "cx21"
     config["server_type"] = ServerType(name=SERVER_TYPE)
 
-    IMAGE = os.getenv("IMAGE")
-    if IMAGE == None:
-        IMAGE = "docker-ce"
-    config["image"] = Image(name=IMAGE)
+    IMAGE_TYPE = os.getenv("IMAGE_TYPE")
+    if IMAGE_TYPE == None:
+        IMAGE_TYPE = "docker-ce"
+    config["image"] = Image(name=IMAGE_TYPE)
 
 
     SSH_KEY_NAME = os.getenv("SSH_KEY_NAME")
@@ -121,30 +112,30 @@ def setup():
     config["ssh_keys"] = config["client"].ssh_keys.get_all(name=SSH_KEY_NAME)
 
 
-    NETWORKS = os.getenv("NETWORKS")
-    if NETWORKS == None:
-        NETWORKS = "rffmpeg"
-    config["networks"] = config["client"].networks.get_all(name=NETWORKS)
+    NETWORK_NAME = os.getenv("NETWORK_NAME")
+    if NETWORK_NAME == None:
+        NETWORK_NAME = "rffmpeg"
+    config["networks"] = config["client"].networks.get_all(name=NETWORK_NAME)
 
-    FIREWALLS = os.getenv("FIREWALLS")
-    if FIREWALLS == None:
-        FIREWALLS = "rffmpeg"
-    config["firewalls"] = config["client"].firewalls.get_all(name=FIREWALLS)
+    FIREWALL_NAME = os.getenv("FIREWALL_NAME")
+    if FIREWALL_NAME == None:
+        FIREWALL_NAME = "rffmpeg"
+    config["firewalls"] = config["client"].firewalls.get_all(name=FIREWALL_NAME)
 
-    PLACEMENT_GROUP = os.getenv("PLACEMENT_GROUP")
-    if PLACEMENT_GROUP == None:
-        PLACEMENT_GROUP = "rffmpeg"
-    config["placement_group"] = config["client"].placement_groups.get_by_name(name=PLACEMENT_GROUP)
+    PLACEMENT_GROUP_NAME = os.getenv("PLACEMENT_GROUP_NAME")
+    if PLACEMENT_GROUP_NAME == None:
+        PLACEMENT_GROUP_NAME = "rffmpeg"
+    config["placement_group"] = config["client"].placement_groups.get_by_name(name=PLACEMENT_GROUP_NAME)
 
-    LOCATION = os.getenv("LOCATION")
-    if LOCATION == None:
-        LOCATION = "nbg1"
-    config["location"] = Location(name=LOCATION)
+    LOCATION_NAME = os.getenv("LOCATION_NAME")
+    if LOCATION_NAME == None:
+        LOCATION_NAME = "nbg1"
+    config["location"] = Location(name=LOCATION_NAME)
 
 
     CLOUD_CONFIG = os.getenv("CLOUD_CONFIG")
     if CLOUD_CONFIG == None:
-        CLOUD_CONFIG = "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'RFFMPEG_LAN_IP=%s' | tee -a /root/.env\n- echo 'CIFS_MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'CIFS_MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- wget https://raw.githubusercontent.com/aleksasiriski/jellyfin-rffmpeg-node/latest/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(RFFMPEG_LAN_IP, CIFS_MEDIA_USERNAME, CIFS_MEDIA_PASSWORD)
+        CLOUD_CONFIG = "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'NFS_LAN_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- wget https://raw.githubusercontent.com/aleksasiriski/jellyfin-rffmpeg-node/latest/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(NFS_LAN_IP, MEDIA_USERNAME, MEDIA_PASSWORD)
     config["cloud_config"] = CLOUD_CONFIG
 
 
