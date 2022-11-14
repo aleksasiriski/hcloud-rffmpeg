@@ -3,13 +3,9 @@ import sys
 import logging
 import asyncio
 
-import re
-from typing import Pattern
-
 from contextlib import contextmanager
 from pathlib import Path
 from sqlite3 import connect as sqlite_connect
-from subprocess import run
 
 from hcloud import Client
 from hcloud.server_types.domain import ServerType
@@ -152,6 +148,11 @@ def setup():
     config["cloud_config"] = CLOUD_CONFIG
 
 
+    JOBS_PER_NODE = os.getenv("JOBS_PER_NODE")
+    if JOBS_PER_NODE == None:
+        JOBS_PER_NODE = 2
+    config["jobs_per_node"] = int(JOBS_PER_NODE)
+
     config["recently_made_node_bool"] = False
 
 
@@ -165,9 +166,6 @@ def dbconn(config):
     yield cur
     conn.commit()
     conn.close()
-
-def run_command(command):
-    return run(command, shell = True)
 
 
 async def recently_made_node_timer(config, delay):
@@ -362,7 +360,7 @@ async def check_processes_and_rescale(config):
                     if host_id == hid and "transcode" in cmd:
                         transcodes += 1
 
-                if transcodes < 2:
+                if transcodes < config["jobs_per_node"]:
                     nodes_with_room += 1
 
             if nodes_with_room == 0:
