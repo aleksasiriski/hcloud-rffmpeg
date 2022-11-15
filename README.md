@@ -16,7 +16,8 @@ If you need a reference docker compose file use [this one](https://github.com/al
 I made and tested these images to use with this script:
 
 1) [ghcr.io/aleksasiriski/jellyfin-rffmpeg-server](https://github.com/aleksasiriski/jellyfin-rffmpeg-server)
-2) [ghcr.io/aleksasiriski/jellyfin-rffmpeg-node](https://github.com/aleksasiriski/jellyfin-rffmpeg-node)
+2) [ghcr.io/aleksasiriski/jellyfin-intro-skipper-rffmpeg-server](https://github.com/aleksasiriski/jellyfin-intro-skipper-rffmpeg-server)
+3) [ghcr.io/aleksasiriski/jellyfin-rffmpeg-node](https://github.com/aleksasiriski/jellyfin-rffmpeg-node)
 
 ## Environment variables
 
@@ -32,7 +33,7 @@ I made and tested these images to use with this script:
 | MEDIA_PASSWORD | Must be explicitly set! | Password for the media share |
 | SERVER_TYPE | cx21 | The type of server from Hetzner that should be used for nodes |
 | IMAGE_TYPE | docker-ce | The OS image used on nodes, `docker-ce` is Ubuntu with Docker preinstalled |
-| SSH_KEY_NAME | root@jellyfin | The name of the ssh key that will be saved on Hetzner and used for nodes |
+| SSH_KEY_NAME | root@jellyfin | The name of the ssh key that will be saved on Hetzner and used for connecting to nodes |
 | NETWORK_NAME | rffmpeg | The name of the network created for local communication between the nodes and the Jellyfin host
 | FIREWALL_NAME | rffmpeg | The name of the firewall created for nodes, recommended to block access to ssh over the internet
 | PLACEMENT_GROUP_NAME | rffmpeg | The name of the placement group created to spread the nodes over the datacenter |
