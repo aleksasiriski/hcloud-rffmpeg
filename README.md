@@ -1,6 +1,4 @@
 # HCLOUD-RFFMPEG
-## NOTICE
-**This script currently works only with my [fork](https://github.com/aleksasiriski/jellyfin-rffmpeg-server) of [rffmpeg](https://github.com/joshuaboniface/rffmpeg) since I added a single name field to the DB config for hosts.**
 
 ## Setup
 1) Set the required environment variables
