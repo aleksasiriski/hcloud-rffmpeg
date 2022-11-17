@@ -37,8 +37,8 @@ services:
       - jellyfin
     environment:
       - TZ=Europe/Berlin
-      - RFFMPEG_LAN_IP=$RFFMPEG_LAN_IP
       - HCLOUD_API_TOKEN=$HCLOUD_API_TOKEN
+      - NFS_LAN_IP=$NFS_LAN_IP
       - MEDIA_USERNAME=$MEDIA_USERNAME_NODE
       - MEDIA_PASSWORD=$MEDIA_PASSWORD_NODE
     volumes:

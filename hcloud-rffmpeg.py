@@ -58,13 +58,13 @@ def setup():
     config["id_rsa_pub"] = ID_RSA_PUB
 
 
-    NFS_LAN_IP = os.getenv("NFS_LAN_IP")
-    if NFS_LAN_IP == None:
-        fail("NFS_LAN_IP env isn't set")
-
     HCLOUD_API_TOKEN = os.getenv("HCLOUD_API_TOKEN")
     if HCLOUD_API_TOKEN == None:
         fail("HCLOUD_API_TOKEN env isn't set")
+
+    NFS_LAN_IP = os.getenv("NFS_LAN_IP")
+    if NFS_LAN_IP == None:
+        fail("NFS_LAN_IP env isn't set")
 
     MEDIA_USERNAME = os.getenv("MEDIA_USERNAME")
     if MEDIA_USERNAME == None:
