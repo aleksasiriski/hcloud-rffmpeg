@@ -186,8 +186,8 @@ async def next_node_name(config):
     else:
         log.debug("Using largest node number + 1.")
         for host in hosts:
-            hid, hostname, weight, server_name = host
-            node_number = server_name.split(name, 1)[1]
+            hid, hostname, weight, servername = host
+            node_number = servername.split(name, 1)[1]
             if next_number <= node_number:
                 next_number = node_number + 1
     
@@ -202,9 +202,9 @@ async def create_server(config):
     if not await recently_made_node(config):
         log.debug("No recently made servers!")
 
-        server_name = await next_node_name(config)
+        servername = await next_node_name(config)
         response = config["client"].servers.create(
-            name=server_name,
+            name=servername,
             server_type=config["server_type"],
             image=config["image"],
             ssh_keys=config["ssh_keys"],
@@ -221,25 +221,25 @@ async def create_server(config):
             await asyncio.sleep(120)
             log.debug("Successfully created a server in HCloud!")
 
-            server_ip = config["client"].servers.get_by_name(name=server_name).private_net[0].ip
+            server_ip = config["client"].servers.get_by_name(name=servername).private_net[0].ip
 
             with dbconn(config) as cur:
                 cur.execute(
-                    "INSERT INTO hosts (hostname, weight, server_name) VALUES (?, ?, ?)",
-                    (server_ip, 1, server_name),
+                    "INSERT INTO hosts (hostname, weight, servername) VALUES (?, ?, ?)",
+                    (server_ip, 1, servername),
                 )
 
-            log.info("Added %s with IP %s to database!"%(server_name,server_ip))
-            asyncio.create_task(check_unused_node(config, server_name))
+            log.info("Added %s with IP %s to database!"%(servername,server_ip))
+            asyncio.create_task(check_unused_node(config, servername))
 
     else:
         log.debug("Recently made a server!")
 
-async def remove_server(config, server_name):
-    server = config["client"].servers.get_by_name(name=server_name)
+async def remove_server(config, servername):
+    server = config["client"].servers.get_by_name(name=servername)
 
     with dbconn(config) as cur:
-        cur.execute("DELETE FROM hosts WHERE server_name = ?", (server_name,))
+        cur.execute("DELETE FROM hosts WHERE servername = ?", (servername,))
 
     try:
         config["client"].servers.delete(server)
@@ -247,8 +247,8 @@ async def remove_server(config, server_name):
     except:
         log.debug("No server found to remove.")
 
-async def check_unused_node(config, server_name):
-    log.debug("Started checking if %s is unused, firstly sleeping for 50 minutes"%(server_name))
+async def check_unused_node(config, servername):
+    log.debug("Started checking if %s is unused, firstly sleeping for 50 minutes"%(servername))
 
     delay_hour = 3000
     delay_ending_hour = 240
@@ -256,7 +256,7 @@ async def check_unused_node(config, server_name):
 
     with dbconn(config) as cur:
         host = cur.execute(
-            "SELECT * FROM hosts WHERE server_name = ?", (server_name,)
+            "SELECT * FROM hosts WHERE servername = ?", (servername,)
         ).fetchone()
     host_id = host[0]
 
@@ -264,7 +264,7 @@ async def check_unused_node(config, server_name):
     while not removed:
         # how many times to check and sleep for 4 minutes after initial 50 minutes
         for counter in range(2):
-            log.debug("Checking if node %s is unused"%(server_name))
+            log.debug("Checking if node %s is unused"%(servername))
 
             with dbconn(config) as cur:
                 current_state = cur.execute(
@@ -277,12 +277,12 @@ async def check_unused_node(config, server_name):
                 current_state = current_state[3]
 
             if current_state != "active":
-                log.info("Node %s marked as inactive and is being removed."%(server_name))
-                await remove_server(config, server_name)
+                log.info("Node %s marked as inactive and is being removed."%(servername))
+                await remove_server(config, servername)
                 removed = True
                 break
             else:
-                log.debug("Node %s marked as active, sleeping."%(server_name))
+                log.debug("Node %s marked as active, sleeping."%(servername))
                 await asyncio.sleep(delay_ending_hour)
 
         if not removed:
@@ -315,9 +315,9 @@ async def remove_all_nodes(config):
     else:
         log.debug("Removing all nodes.")
         for host in hosts:
-            hid, hostname, weight, server_name = host
-            log.debug("Removing node %s."%(server_name))
-            await remove_server(config, server_name)
+            hid, hostname, weight, servername = host
+            log.debug("Removing node %s."%(servername))
+            await remove_server(config, servername)
 
 
 async def check_processes_and_rescale(config):
@@ -344,7 +344,7 @@ async def check_processes_and_rescale(config):
             nodes_with_room = 0
             for host in hosts:
                 transcodes = 0
-                hid, hostname, weight, server_name = host
+                hid, hostname, weight, servername = host
 
                 for process in processes:
                     pid, host_id, process_id, cmd = process
