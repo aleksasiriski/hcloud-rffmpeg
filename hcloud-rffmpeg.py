@@ -84,7 +84,7 @@ def setup():
 
     IMAGE_TYPE = os.getenv("IMAGE_TYPE")
     if IMAGE_TYPE == None:
-        IMAGE_TYPE = "docker-ce"
+        IMAGE_TYPE = "rocky-9"
     config["image"] = Image(name=IMAGE_TYPE)
 
 
@@ -135,7 +135,7 @@ def setup():
 
     CLOUD_CONFIG = os.getenv("CLOUD_CONFIG")
     if CLOUD_CONFIG == None:
-        CLOUD_CONFIG = "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'NFS_LAN_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- wget https://raw.githubusercontent.com/aleksasiriski/jellyfin-rffmpeg-node/latest/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(NFS_LAN_IP, MEDIA_USERNAME, MEDIA_PASSWORD)
+        CLOUD_CONFIG = "#cloud-config\nruncmd:\n- systemctl disable --now sshd.service\n- echo 'NFS_LAN_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo\n- dnf update -y --security --bugfix\n- dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin\n- wget https://raw.githubusercontent.com/aleksasiriski/jellyfin-rffmpeg-node/latest/daemon.json -O /etc/docker/daemon.json\n- systemctl enable --now docker\n- wget https://raw.githubusercontent.com/aleksasiriski/jellyfin-rffmpeg-node/latest/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(NFS_LAN_IP, MEDIA_USERNAME, MEDIA_PASSWORD)
     config["cloud_config"] = CLOUD_CONFIG
 
 
