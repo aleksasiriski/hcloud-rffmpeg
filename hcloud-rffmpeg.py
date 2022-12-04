@@ -366,7 +366,6 @@ async def check_processes_and_rescale(config):
 
 async def main():
     print("Starting HCloud!")
-    await asyncio.sleep(30)
 
     # Setup
     config = setup()
