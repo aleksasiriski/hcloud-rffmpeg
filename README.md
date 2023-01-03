@@ -30,7 +30,7 @@ I made and tested these images to use with this script:
 | MEDIA_USERNAME | Must be explicitly set! | Username for the media share |
 | MEDIA_PASSWORD | Must be explicitly set! | Password for the media share |
 | SERVER_TYPE | cx21 | The type of server from Hetzner that should be used for nodes |
-| IMAGE_TYPE | rocky-9 | The OS image used on nodes, `docker-ce` is Ubuntu with Docker preinstalled |
+| IMAGE_TYPE | docker-ce | The OS image used on nodes, `docker-ce` is Ubuntu with Docker preinstalled |
 | SSH_KEY_NAME | root@jellyfin | The name of the ssh key that will be saved on Hetzner and used for connecting to nodes |
 | NETWORK_NAME | rffmpeg | The name of the network created for local communication between the nodes and the Jellyfin host
 | FIREWALL_NAME | rffmpeg | The name of the firewall created for nodes, recommended to block access to ssh over the internet
