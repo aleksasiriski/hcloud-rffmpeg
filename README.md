@@ -1,7 +1,7 @@
 # HCLOUD-RFFMPEG
 
 # IMPORTANT
-## I'm making a rewrite of this script in GO Lang which will also include instructions on how to setup equivalent functionality on Kubernetes!
+## I'm making a [rewrite](https://github.com/aleksasiriski/hcloud-rffmpeg-go) of this script in GO Lang which will also include instructions on how to setup equivalent functionality on Kubernetes!
 
 ## Setup
 1) Set the required environment variables
