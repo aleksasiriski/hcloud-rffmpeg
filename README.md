@@ -1,5 +1,8 @@
 # HCLOUD-RFFMPEG
 
+# IMPORTANT
+## I'm making a rewrite of this script in GO Lang which will also include instructions on how to setup equivalent functionality on Kubernetes!
+
 ## Setup
 1) Set the required environment variables
 2) Share the volume of rffmpeg config directory with jellyfin
