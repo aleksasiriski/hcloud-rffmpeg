@@ -41,4 +41,4 @@ I made and tested these images to use with this script:
 | PLACEMENT_GROUP_NAME | rffmpeg | The name of the placement group created to spread the workers over the datacenter |
 | LOCATION_NAME | nbg1 | The name of the location in which the workers should be created |
 | CLOUD_CONFIG | [string](https://github.com/aleksasiriski/hcloud-rffmpeg/blob/main/hcloud-rffmpeg.py#L138) | The string that setups the workers after creation, the default uses my docker compose and inserts needed env variables |
-| JOBS_PER_NODE | 2 | Number of jobs allowed per node, the default of 2 tells the script to only create a new node if there are 2 or more jobs on the previous one. |
+| JOBS_PER_WORKER | 2 | Number of jobs allowed per worker, the default of 2 tells the script to only create a new worker if there are 2 or more jobs on the previous one. |
