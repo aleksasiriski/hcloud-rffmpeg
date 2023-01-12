@@ -7,13 +7,13 @@ name: Docker
 
 on:
   schedule:
-    - cron: '45 11 * * *'
+    - cron: '0 5 * * *'
   push:
-    branches: [ "latest" ]
+    branches: [ "main" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "latest" ]
+    branches: [ "main" ]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -36,6 +36,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -80,3 +85,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: |-
+            linux/amd64
+            linux/arm64
