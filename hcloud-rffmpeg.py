@@ -139,10 +139,10 @@ def setup():
     config["cloud_config"] = CLOUD_CONFIG
 
 
-    JOBS_PER_NODE = os.getenv("JOBS_PER_NODE")
-    if JOBS_PER_NODE == None:
-        JOBS_PER_NODE = 2
-    config["jobs_per_node"] = int(JOBS_PER_NODE)
+    JOBS_PER_WORKER = os.getenv("JOBS_PER_WORKER")
+    if JOBS_PER_WORKER == None:
+        JOBS_PER_WORKER = 2
+    config["jobs_per_worker"] = int(JOBS_PER_WORKER)
 
     config["recently_made_node_bool"] = False
 
@@ -351,7 +351,7 @@ async def check_processes_and_rescale(config):
                     if host_id == hid and "transcode" in cmd:
                         transcodes += 1
 
-                if transcodes < config["jobs_per_node"]:
+                if transcodes < config["jobs_per_worker"]:
                     nodes_with_room += 1
 
             if nodes_with_room == 0:
