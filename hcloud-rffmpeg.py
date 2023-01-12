@@ -62,9 +62,9 @@ def setup():
     if HCLOUD_API_TOKEN == None:
         fail("HCLOUD_API_TOKEN env isn't set")
 
-    NFS_LAN_IP = os.getenv("NFS_LAN_IP")
-    if NFS_LAN_IP == None:
-        fail("NFS_LAN_IP env isn't set")
+    JELLYFIN_LAN_ONLY_IP = os.getenv("JELLYFIN_LAN_ONLY_IP")
+    if JELLYFIN_LAN_ONLY_IP == None:
+        fail("JELLYFIN_LAN_ONLY_IP env isn't set")
 
     MEDIA_USERNAME = os.getenv("MEDIA_USERNAME")
     if MEDIA_USERNAME == None:
@@ -135,7 +135,7 @@ def setup():
 
     CLOUD_CONFIG = os.getenv("CLOUD_CONFIG")
     if CLOUD_CONFIG == None:
-        CLOUD_CONFIG = "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'NFS_LAN_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- wget https://raw.githubusercontent.com/aleksasiriski/jellyfin-rffmpeg-node/latest/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(NFS_LAN_IP, MEDIA_USERNAME, MEDIA_PASSWORD)
+        CLOUD_CONFIG = "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'JELLYFIN_LAN_ONLY_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- wget https://raw.githubusercontent.com/aleksasiriski/rffmpeg-worker/main/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(JELLYFIN_LAN_ONLY_IP, MEDIA_USERNAME, MEDIA_PASSWORD)
     config["cloud_config"] = CLOUD_CONFIG
 
 
