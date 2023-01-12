@@ -19,7 +19,7 @@ If you need a reference docker compose file use [this one](https://github.com/al
 I made and tested these images to use with this script:
 
 * [ghcr.io/aleksasiriski/jellyfin-rffmpeg](https://github.com/aleksasiriski/jellyfin-rffmpeg)
-* [ghcr.io/aleksasiriski/rffmpeg-node](https://github.com/aleksasiriski/rffmpeg-node)
+* [ghcr.io/aleksasiriski/rffmpeg-worker](https://github.com/aleksasiriski/rffmpeg-worker)
 
 ## Environment variables
 
