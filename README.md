@@ -12,7 +12,7 @@ Check [this](https://github.com/aleksasiriski/rffmpeg-worker) out!
 4) All of your nodes need jellyfin config, cache and transcode directories available and mounted at the same path as the jellyfin host. Best solution is to use `NFSv4` with `sync` option.
 5) Also, I'm assuming you're using Hetzner Storage Box so the defaults will work for you, but if you aren't using a network drive for media you will need to share that directory via NFS as well.
 
-If you need a reference docker compose file use [this one](https://github.com/aleksasiriski/hcloud-rffmpeg/blob/latest/docker-compose.example.yml).
+If you need a reference docker compose file use [this one](https://github.com/aleksasiriski/hcloud-rffmpeg/blob/main/docker-compose.example.yml).
 
 ## Recommended images
 
@@ -40,5 +40,5 @@ I made and tested these images to use with this script:
 | FIREWALL_NAME | rffmpeg | The name of the firewall created for nodes, recommended to block access to ssh over the internet
 | PLACEMENT_GROUP_NAME | rffmpeg | The name of the placement group created to spread the nodes over the datacenter |
 | LOCATION_NAME | nbg1 | The name of the location in which the nodes should be created |
-| CLOUD_CONFIG | [string](https://github.com/aleksasiriski/hcloud-rffmpeg/blob/latest/hcloud-rffmpeg.py#L138) | The string that setups the nodes after creation, the default uses my docker compose and inserts needed env variables |
+| CLOUD_CONFIG | [string](https://github.com/aleksasiriski/hcloud-rffmpeg/blob/main/hcloud-rffmpeg.py#L138) | The string that setups the nodes after creation, the default uses my docker compose and inserts needed env variables |
 | JOBS_PER_NODE | 2 | Number of jobs allowed per node, the default of 2 tells the script to only create a new node if there are 2 or more jobs on the previous one. |
