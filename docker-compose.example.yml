@@ -8,7 +8,6 @@ services:
       - ${JELLYFIN_LAN_ONLY_IP:-}:8096:8096 # public should access via reverse proxy
     volumes:
       - jellyfin-conf:/config:z
-      - rffmpeg-conf:/config/rffmpeg:z
       - /media:/media # optional media folder
     restart: always
   nfs-server:
@@ -35,8 +34,7 @@ services:
       - MEDIA_USERNAME=$MEDIA_USERNAME_NODE
       - MEDIA_PASSWORD=$MEDIA_PASSWORD_NODE
     volumes:
-      - rffmpeg-conf:/config/rffmpeg:z
+      - jellyfin-conf:/config:z
     restart: always
 volumes:
   jellyfin-conf:
-  rffmpeg-conf:
