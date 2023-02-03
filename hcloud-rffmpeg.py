@@ -51,7 +51,7 @@ def setup():
     config["state_dir"] = os.getenv("STATE_DIR", "/config")
     config["log_file"] = os.getenv("LOG_FILE", config["state_dir"] + "/log/hcloud-rffmpeg.log")
     config["db_path"] = os.getenv("DB_PATH", config["state_dir"] + "/rffmpeg/rffmpeg.db")
-    config["ssh_key"] = os.getenv("SSH_KEY", config["state_dir"] + "/rffmpeg/.ssh/id_rsa.pub")
+    config["ssh_key"] = os.getenv("SSH_KEY", config["state_dir"] + "/rffmpeg/.ssh/id_ed25519.pub")
 
     config["client"] = Client(token=HCLOUD_API_TOKEN)
     config["server_type"] = os.getenv("SERVER_TYPE", "cx21")
