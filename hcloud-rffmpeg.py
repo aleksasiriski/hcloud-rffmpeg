@@ -46,7 +46,7 @@ def setup():
     
     MEDIA_USERNAME = os.getenv("MEDIA_USERNAME", "")
     MEDIA_PASSWORD = os.getenv("MEDIA_PASSWORD", "")
-    config["cloud_config"] = os.getenv("CLOUD_CONFIG", "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'JELLYFIN_LAN_ONLY_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- fallocate -l 4G /swapfile\n- chmod 600 /swapfile\n- mkswap /swapfile\n- swapon /swapfile\n- echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab\n- wget https://raw.githubusercontent.com/aleksasiriski/rffmpeg-worker/main/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(JELLYFIN_LAN_ONLY_IP, MEDIA_USERNAME, MEDIA_PASSWORD))
+    config["cloud_config"] = os.getenv("CLOUD_CONFIG", "#cloud-config\nruncmd:\n- systemctl disable --now ssh.service\n- echo 'JELLYFIN_LAN_ONLY_IP=%s' | tee -a /root/.env\n- echo 'MEDIA_USERNAME=%s' | tee -a /root/.env\n- echo 'MEDIA_PASSWORD=%s' | tee -a /root/.env\n- wget https://raw.githubusercontent.com/aleksasiriski/rffmpeg-worker/main/docker-compose.example.yml -O /root/docker-compose.yml\n- cd /root && docker compose pull && docker compose up -d\n"%(JELLYFIN_LAN_ONLY_IP, MEDIA_USERNAME, MEDIA_PASSWORD))
 
     config["state_dir"] = os.getenv("STATE_DIR", "/config")
     config["log_file"] = os.getenv("LOG_FILE", config["state_dir"] + "/log/hcloud-rffmpeg.log")
