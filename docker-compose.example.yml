@@ -30,9 +30,9 @@ services:
     environment:
       - TZ=Europe/Berlin
       - HCLOUD_API_TOKEN=$HCLOUD_API_TOKEN
-      - NFS_LAN_IP=$JELLYFIN_LAN_ONLY_IP
-      - MEDIA_USERNAME=$MEDIA_USERNAME_NODE
-      - MEDIA_PASSWORD=$MEDIA_PASSWORD_NODE
+      - JELLYFIN_LAN_ONLY_IP=$JELLYFIN_LAN_ONLY_IP
+      - MEDIA_USERNAME=$MEDIA_USERNAME_FOR_WORKERS
+      - MEDIA_PASSWORD=$MEDIA_PASSWORD_FOR_WORKERS
     volumes:
       - jellyfin-conf:/config:z
     restart: always
