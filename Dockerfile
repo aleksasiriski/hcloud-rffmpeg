@@ -6,6 +6,6 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-VOLUME /config/rffmpeg
+VOLUME /config
 
 ENTRYPOINT [ "python", "./hcloud-rffmpeg.py" ]
