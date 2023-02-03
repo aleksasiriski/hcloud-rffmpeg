@@ -1,5 +1,8 @@
 # HCLOUD-RFFMPEG
 
+## NOTICE!
+**Currently I'm working on a rewrite in Go which will be much easier to use and will do more things automatically. It will also be faster and safer since it's Go and not Python**
+
 ## Kubernetes
 
 Check [this](https://github.com/aleksasiriski/rffmpeg-worker) out!
