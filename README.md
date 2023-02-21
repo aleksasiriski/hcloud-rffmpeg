@@ -1,7 +1,7 @@
 # HCLOUD-RFFMPEG
 
 ## NOTICE!
-**Currently I'm working on a [rewrite in Go](https://github.com/aleksasiriski/rffmpeg-autoscaler) which will be much easier to use and will do more things automatically. It will also be faster and safer since it's Go and not Python**
+**I've rewritten this [script in Go](https://github.com/aleksasiriski/rffmpeg-autoscaler) which is much easier to use and does more things automatically.**
 
 ## Kubernetes
 
